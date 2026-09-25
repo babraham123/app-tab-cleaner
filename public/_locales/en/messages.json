@@ -3,7 +3,7 @@
     "message": "App Tab Cleaner"
   },
   "extDescription": {
-    "message": "Automatically closes tabs left behind after links open in desktop apps like Zoom, Slack, Teams and Notion."
+    "message": "Automatically closes the browser tabs left behind after a link opens a desktop app, like a meeting or chat client."
   },
   "pause": {
     "message": "Pause auto-closing"

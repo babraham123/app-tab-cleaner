@@ -6,7 +6,7 @@ Copy these into the [developer dashboard](https://chrome.google.com/webstore/dev
 
 **Name and summary** come from the manifest (`_locales/en/messages.json`):
 - **Name:** App Tab Cleaner
-- **Summary (≤132 chars):** Automatically closes tabs left behind after links open in desktop apps like Zoom, Slack, Teams and Notion.
+- **Summary (≤132 chars):** Automatically closes the browser tabs left behind after a link opens a desktop app, like a meeting or chat client.
 
 **Category:** Productivity → Workflow & Planning
 
@@ -15,7 +15,7 @@ Copy these into the [developer dashboard](https://chrome.google.com/webstore/dev
 **Description** (plain text; the store doesn't render Markdown):
 
 ```
-Clicking a Zoom, Slack, Teams or Notion link opens the desktop app, and leaves a useless browser tab behind. App Tab Cleaner closes those tabs for you a few seconds after the app takes over.
+Clicking a meeting, chat or notes link often opens the desktop app, and leaves a useless browser tab behind. App Tab Cleaner closes those tabs for you a few seconds after the app takes over.
 
 HOW IT WORKS
 • When a tab opens, navigates to or reloads a URL matching one of your rules, a countdown starts on the toolbar icon (10 seconds by default).
@@ -23,14 +23,8 @@ HOW IT WORKS
 • Changed your mind? Click "Keep this tab" in the popup, or navigate the tab somewhere else, and it stays open.
 
 WORKS OUT OF THE BOX
-Built-in rules that recognise the "handoff" pages these apps leave behind, not their normal web versions:
-• Zoom: meeting links, once Zoom reports the desktop client launched
-• Slack: message and channel links that open in the app
-• Microsoft Teams: the "Open in Teams" launcher page
-• Notion: "open in desktop app" redirects
-• Discord: server invites
-• Linear: issue links handed off to the desktop app
-Figma and Spotify rules are included but off by default, since their handoff pages look identical to normal use.
+Built-in rules recognise the "handoff" pages that popular video-meeting, chat, notes, community and project-management apps leave behind, not their normal web versions. You can edit, reorder or turn off any of them.
+Rules for apps whose handoff pages look identical to normal use are included but off by default.
 
 YOUR OWN RULES
 • Match any URL with regular expressions, with optional exceptions
@@ -71,7 +65,7 @@ Free and open source (MIT): https://github.com/babraham123/app-tab-cleaner
 **Single purpose:**
 
 ```
-Automatically closes browser tabs whose URL matches user-defined patterns after a timeout: typically the leftover pages from links that open desktop apps such as Zoom, Slack, Microsoft Teams and Notion.
+Automatically closes browser tabs whose URL matches user-defined patterns after a timeout: typically the leftover pages from links that open desktop apps, such as video-meeting and chat clients.
 ```
 
 **Permission justifications:**

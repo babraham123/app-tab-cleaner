@@ -16,13 +16,13 @@ For the first submission at [addons.mozilla.org/developers/addon/submit](https:/
 - **Summary (≤250 chars):**
 
   ```
-  Automatically closes the tabs left behind when links open desktop apps like Zoom, Slack, Microsoft Teams and Notion. Regex rules, per-rule timeouts, a countdown on the toolbar icon, and no data collection.
+  Automatically closes the browser tabs left behind when a link opens a desktop app, like a meeting or chat client. Regex rules, per-rule timeouts, a countdown on the toolbar icon, and no data collection.
   ```
 
 - **Description** (plain text; AMO keeps line breaks):
 
   ```
-  Clicking a Zoom, Slack, Teams or Notion link opens the desktop app, and leaves a useless browser tab behind. App Tab Cleaner closes those tabs for you a few seconds after the app takes over.
+  Clicking a meeting, chat or notes link often opens the desktop app, and leaves a useless browser tab behind. App Tab Cleaner closes those tabs for you a few seconds after the app takes over.
 
   HOW IT WORKS
   • When a tab opens, navigates to or reloads a URL matching one of your rules, a countdown starts on the toolbar button (10 seconds by default).
@@ -31,14 +31,8 @@ For the first submission at [addons.mozilla.org/developers/addon/submit](https:/
   • Tip: pin the button to your toolbar from the extensions menu to see the countdown, or turn on "Notify before closing" in the settings.
 
   WORKS OUT OF THE BOX
-  Built-in rules that recognise the "handoff" pages these apps leave behind, not their normal web versions:
-  • Zoom: meeting links, once Zoom reports the desktop client launched
-  • Slack: message and channel links that open in the app
-  • Microsoft Teams: the "Open in Teams" launcher page
-  • Notion: "open in desktop app" redirects
-  • Discord: server invites
-  • Linear: issue links handed off to the desktop app
-  Figma and Spotify rules are included but off by default, since their handoff pages look identical to normal use.
+  Built-in rules recognise the "handoff" pages that popular video-meeting, chat, notes, community and project-management apps leave behind, not their normal web versions. You can edit, reorder or turn off any of them.
+  Rules for apps whose handoff pages look identical to normal use are included but off by default.
 
   YOUR OWN RULES
   • Match any URL with regular expressions, with optional exceptions
@@ -80,7 +74,7 @@ For the first submission at [addons.mozilla.org/developers/addon/submit](https:/
 
   The linter's innerHTML warning comes from the Preact library (support for dangerouslySetInnerHTML); the extension's own code never uses it.
 
-  To test: the Zoom preset closes https://zoom.us/j/1#success after 10 seconds. You can also add a rule matching ^https://example\.com/ in Settings, then open https://example.com/.
+  To test: in Settings, add a rule matching ^https://example\.com/, then open https://example.com/ in a new tab. It closes after 10 seconds.
   ```
 
 ## Media step
@@ -90,7 +84,7 @@ AMO accepts the same images as the Chrome listing. Upload them from `store/chrom
 | File | Caption |
 |---|---|
 | `screenshot-1.png` | The popup counts down before closing a leftover tab |
-| `screenshot-2.png` | Built-in rules for Zoom, Slack, Teams, Notion, Discord and Linear |
+| `screenshot-2.png` | Built-in rules for popular desktop apps |
 | `screenshot-3.png` | Write your own regex rules and test them live |
 | `screenshot-4.png` | Minimal permissions and optional notifications |
 

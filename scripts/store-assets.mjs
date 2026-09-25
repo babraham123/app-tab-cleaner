@@ -43,11 +43,11 @@ await sw.evaluate(async () => {
   }
 });
 
-// The popup reads the active tab, which here is the popup page itself; a temporary rule named
-// "Zoom" that matches it produces a realistic countdown.
+// The popup reads the active tab, which here is the popup page itself; a temporary rule that
+// matches it produces a realistic countdown.
 await sw.evaluate(async () => {
   const { rules } = await chrome.storage.sync.get('rules');
-  const demo = { id: 'demo', name: 'Zoom', include: ['/popup\\.html'], exclude: [], timeoutSec: 10, enabled: true };
+  const demo = { id: 'demo', name: 'Meeting links', include: ['/popup\\.html'], exclude: [], timeoutSec: 10, enabled: true };
   await chrome.storage.sync.set({ rules: [demo, ...rules] });
 });
 const popup = await ctx.newPage();
@@ -56,9 +56,19 @@ await popup.goto(`chrome-extension://${id}/popup.html`);
 await popup.waitForTimeout(2200);
 const popupShot = await popup.locator('main').screenshot();
 await popup.close().catch(() => {});
+// Swap the popup demo for a custom rule to show in the editor; it sorts after the presets, so it
+// stays out of the rules-list crop.
 await sw.evaluate(async () => {
   const { rules } = await chrome.storage.sync.get('rules');
-  await chrome.storage.sync.set({ rules: rules.filter((r) => r.id !== 'demo') });
+  const custom = {
+    id: 'custom',
+    name: 'Company meeting links',
+    include: ['^https://meet\\.example\\.com/join/'],
+    exclude: ['[?&]web=1'],
+    timeoutSec: 5,
+    enabled: true,
+  };
+  await chrome.storage.sync.set({ rules: [...rules.filter((r) => r.id !== 'demo'), custom] });
 });
 
 const options = await ctx.newPage();
@@ -74,8 +84,8 @@ const notifySection = options.locator('section', { hasText: 'Notify before closi
 await notifySection.evaluate((el) => (el.style.padding = '20px 24px'));
 const notifyShot = await notifySection.screenshot();
 
-await options.locator('.rule', { hasText: 'Zoom' }).getByRole('button', { name: 'Edit' }).click();
-await options.fill('.editor input[type=url]', 'https://acme.zoom.us/j/123456789?pwd=abc#success');
+await options.locator('.rule', { hasText: 'Company meeting links' }).getByRole('button', { name: 'Edit' }).click();
+await options.fill('.editor input[type=url]', 'https://meet.example.com/join/4815162342');
 const editorShot = await options.locator('.editor').screenshot();
 
 const uri = (png) => `data:image/png;base64,${png.toString('base64')}`;
@@ -112,12 +122,12 @@ const screenshots = [
   {
     brand: true,
     title: 'Close the tabs desktop apps leave behind',
-    body: 'Zoom, Slack, Teams and Notion links open their desktop apps and leave a dead tab behind. App Tab Cleaner closes it after a few seconds.',
+    body: 'Meeting, chat and notes links often open a desktop app and leave a dead tab behind. App Tab Cleaner closes it after a few seconds.',
     visual: card(popupShot, 380),
   },
   {
     title: 'Works out of the box',
-    body: 'Built-in rules for Zoom, Slack, Microsoft Teams, Notion, Discord and Linear. Edit, reorder or turn off any of them.',
+    body: 'Built-in rules for popular meeting, chat, notes and project-management apps. Edit, reorder or turn off any of them.',
     visual: card(rulesShot, 640),
   },
   {
@@ -145,7 +155,7 @@ await render.setContent(`
     background:linear-gradient(135deg,#5b4bf5,#a24bea);color:#fff;font-family:system-ui,-apple-system,sans-serif;text-align:center">
     <img src="${iconDataUri}" width="88">
     <div style="font-size:30px;font-weight:700">App Tab Cleaner</div>
-    <div style="font-size:16px;opacity:.92;max-width:340px">Auto-close the tabs Zoom, Slack, Teams &amp; Notion links leave behind</div>
+    <div style="font-size:16px;opacity:.92;max-width:340px">Auto-close the tabs that desktop-app links leave behind</div>
   </body>`);
 await render.screenshot({ path: join(out, 'promo-small-440x280.png'), scale: 'css' });
 
