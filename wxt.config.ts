@@ -27,5 +27,7 @@ export default defineConfig({
         }
       : { minimum_chrome_version: '121' }),
   }),
+  // AMO reviewers rebuild from the sources zip; the listing images aren't needed for that.
+  zip: { excludeSources: ['store/**'] },
   vite: () => ({ plugins: [preact()] }),
 });
