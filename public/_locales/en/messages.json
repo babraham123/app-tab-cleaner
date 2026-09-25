@@ -1,0 +1,276 @@
+{
+  "extName": {
+    "message": "App Tab Cleaner"
+  },
+  "extDescription": {
+    "message": "Automatically closes tabs left behind after links open in desktop apps like Zoom, Slack, Teams and Notion."
+  },
+  "pause": {
+    "message": "Pause auto-closing"
+  },
+  "paused": {
+    "message": "Paused"
+  },
+  "pausedBanner": {
+    "message": "Auto-closing is paused. No tabs will be closed."
+  },
+  "closingIn": {
+    "message": "Closing in $P1$s",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      }
+    }
+  },
+  "closingInRule": {
+    "message": "Matched rule: $P1$",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      }
+    }
+  },
+  "keepTab": {
+    "message": "Keep this tab"
+  },
+  "tabKept": {
+    "message": "This tab will stay open."
+  },
+  "noMatch": {
+    "message": "No rule matches this tab."
+  },
+  "addRuleFromTab": {
+    "message": "Add rule from this tab"
+  },
+  "openSettings": {
+    "message": "Settings"
+  },
+  "rules": {
+    "message": "Rules"
+  },
+  "rulesHelp": {
+    "message": "Rules are checked top to bottom; the first match wins. Drag to reorder, or focus a handle and use ↑/↓."
+  },
+  "newRule": {
+    "message": "New rule"
+  },
+  "noRules": {
+    "message": "No rules yet. Add one, or pick from the presets below."
+  },
+  "edit": {
+    "message": "Edit"
+  },
+  "delete": {
+    "message": "Delete"
+  },
+  "confirmDelete": {
+    "message": "Delete rule \"$P1$\"?",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      }
+    }
+  },
+  "enabled": {
+    "message": "Enabled"
+  },
+  "reorderHandle": {
+    "message": "Reorder $P1$",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      }
+    }
+  },
+  "timeoutSummary": {
+    "message": "$P1$s",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      }
+    }
+  },
+  "presetBadge": {
+    "message": "Preset"
+  },
+  "editRule": {
+    "message": "Edit rule"
+  },
+  "fieldName": {
+    "message": "Name"
+  },
+  "fieldInclude": {
+    "message": "Close tabs matching"
+  },
+  "fieldIncludeHelp": {
+    "message": "One regular expression per line, tested case-insensitively against the full URL."
+  },
+  "fieldExclude": {
+    "message": "Except when matching"
+  },
+  "fieldExcludeHelp": {
+    "message": "Optional. One regular expression per line."
+  },
+  "fieldTimeout": {
+    "message": "Close after (seconds)"
+  },
+  "timeoutWarning": {
+    "message": "Timeouts over $P1$s rely on browser alarms and may run a few seconds late.",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      }
+    }
+  },
+  "fieldTester": {
+    "message": "Test a URL"
+  },
+  "testerPlaceholder": {
+    "message": "https://…"
+  },
+  "testerMatch": {
+    "message": "Matches ($P1$)",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      }
+    }
+  },
+  "testerExcluded": {
+    "message": "Excluded by $P1$",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      }
+    }
+  },
+  "testerNoMatch": {
+    "message": "Does not match"
+  },
+  "save": {
+    "message": "Save"
+  },
+  "cancel": {
+    "message": "Cancel"
+  },
+  "presets": {
+    "message": "Presets"
+  },
+  "presetsHelp": {
+    "message": "Built-in rules for apps that hand links off to a desktop client. Presets you haven't edited are updated automatically."
+  },
+  "addPreset": {
+    "message": "Add"
+  },
+  "resetPreset": {
+    "message": "Reset to default"
+  },
+  "presetAdded": {
+    "message": "Added"
+  },
+  "presetZoom": {
+    "message": "Meeting links, once Zoom reports the desktop client launched (#success)."
+  },
+  "presetSlack": {
+    "message": "Links to messages and channels that open in the Slack app."
+  },
+  "presetTeams": {
+    "message": "The \"Open in Teams\" launcher page for meeting and chat links."
+  },
+  "presetNotion": {
+    "message": "Redirect pages when \"Open links in desktop app\" is on. Notion also has its own \"Close redirecting browser tabs\" setting."
+  },
+  "presetDiscord": {
+    "message": "Server invite pages. Accepting an invite in the browser cancels the close."
+  },
+  "presetLinear": {
+    "message": "Issue links after Linear hands them to the desktop app."
+  },
+  "presetFigma": {
+    "message": "Design, file, board and slides links."
+  },
+  "presetSpotify": {
+    "message": "Track, album, playlist, episode, show and artist links."
+  },
+  "presetWarningNoMarker": {
+    "message": "This app's handoff pages look identical to normal browser use, so this also closes tabs you open on purpose. Only enable it if you never use the web version."
+  },
+  "importExport": {
+    "message": "Import / export"
+  },
+  "export": {
+    "message": "Export rules"
+  },
+  "importFile": {
+    "message": "Import from file"
+  },
+  "importPaste": {
+    "message": "Or paste JSON"
+  },
+  "importApply": {
+    "message": "Import"
+  },
+  "importReplace": {
+    "message": "Replace existing rules instead of merging"
+  },
+  "importDone": {
+    "message": "Imported $P1$ rules.",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      }
+    }
+  },
+  "errNameRequired": {
+    "message": "Name is required."
+  },
+  "errIncludeRequired": {
+    "message": "Add at least one pattern."
+  },
+  "errInvalidPattern": {
+    "message": "Invalid pattern $P1$: $P2$",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      },
+      "p2": {
+        "content": "$2"
+      }
+    }
+  },
+  "errTimeout": {
+    "message": "Use whole seconds from 0 to $P1$.",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      }
+    }
+  },
+  "errImportJson": {
+    "message": "That isn't valid JSON."
+  },
+  "errImportFormat": {
+    "message": "Expected an App Tab Cleaner export (version $P1$).",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      }
+    }
+  },
+  "errImportRule": {
+    "message": "Rule $P1$ is invalid:",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      }
+    }
+  },
+  "errSave": {
+    "message": "Couldn't save: $P1$",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      }
+    }
+  }
+}
