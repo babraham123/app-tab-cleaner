@@ -1,0 +1,185 @@
+main {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 28px 16px 64px;
+  display: grid;
+  gap: 28px;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+header .brand img {
+  width: 40px;
+  height: 40px;
+}
+
+header h1 {
+  font-size: 22px;
+}
+
+section {
+  display: grid;
+  gap: 10px;
+}
+
+section > p {
+  margin: 0;
+}
+
+h2 {
+  font-size: 17px;
+}
+
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.rules,
+.presets {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.rule {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.rule.dragging {
+  opacity: 0.4;
+}
+
+.rule.drop-target {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.rule-body {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.rule-body code {
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.handle {
+  cursor: grab;
+  border: none;
+  background: none;
+  color: var(--muted);
+  padding: 4px 2px;
+  letter-spacing: -3px;
+}
+
+.tag {
+  font-size: 11px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: var(--border);
+  color: var(--muted);
+}
+
+.preset {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.preset p {
+  margin: 2px 0 0;
+}
+
+.preset button {
+  flex: none;
+}
+
+.import-export {
+  display: grid;
+  gap: 10px;
+}
+
+.file-button {
+  position: relative;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.file-button input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.file-button:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.test-ok {
+  color: var(--ok);
+  margin: 4px 0 0;
+  font-size: 13px;
+}
+
+.editor {
+  width: min(560px, calc(100vw - 32px));
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--bg);
+  color: var(--text);
+  padding: 20px;
+}
+
+.editor::backdrop {
+  background: rgb(0 0 0 / 0.45);
+}
+
+.editor form {
+  display: grid;
+  gap: 14px;
+}
+
+.editor label:not(.switch) {
+  display: grid;
+  gap: 4px;
+}
+
+.editor label > span {
+  font-weight: 600;
+}
+
+@media (max-width: 560px) {
+  .rule {
+    flex-wrap: wrap;
+  }
+}
