@@ -17,7 +17,8 @@
     "lint": "eslint . && tsc --noEmit",
     "test": "vitest run",
     "icons": "node scripts/render-icons.mjs",
-    "postinstall": "wxt prepare"
+    "postinstall": "wxt prepare",
+    "store-assets": "wxt build && node scripts/store-assets.mjs"
   },
   "dependencies": {
     "preact": "^10.29.8"
@@ -28,6 +29,7 @@
     "@resvg/resvg-js": "^2.6.2",
     "eslint": "^10.11.0",
     "globals": "^17.12.0",
+    "playwright": "^1.63.0",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.70.1",
     "vitest": "^5.0.1",
