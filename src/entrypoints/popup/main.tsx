@@ -2,6 +2,7 @@ import { render } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 import { browser, type Browser } from 'wxt/browser';
 import { useNow, useSettings } from '@/components/hooks';
+import { PinNudge } from '@/components/Notifications';
 import { PauseToggle } from '@/components/PauseToggle';
 import { t } from '@/lib/i18n';
 import { getTabState, keepTab, type TabState } from '@/lib/messages';
@@ -41,6 +42,8 @@ function Popup() {
           <h1 style={{ fontSize: '15px' }}>{t('extName')}</h1>
         </div>
       </header>
+
+      <PinNudge />
 
       <PauseToggle paused={paused} />
 

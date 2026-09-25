@@ -4,6 +4,7 @@ import type { Rule } from './rules';
 
 const RULES_KEY = 'rules';
 const PAUSED_KEY = 'paused';
+const NOTIFY_KEY = 'notify';
 
 export async function getRules(): Promise<Rule[]> {
   const stored = await browser.storage.sync.get(RULES_KEY);
@@ -14,18 +15,24 @@ export async function setRules(rules: Rule[]): Promise<void> {
   await browser.storage.sync.set({ [RULES_KEY]: rules });
 }
 
-export async function getPaused(): Promise<boolean> {
-  const stored = await browser.storage.sync.get(PAUSED_KEY);
-  return stored[PAUSED_KEY] === true;
+async function getFlag(key: string): Promise<boolean> {
+  const stored = await browser.storage.sync.get(key);
+  return stored[key] === true;
 }
 
-export async function setPaused(paused: boolean): Promise<void> {
-  await browser.storage.sync.set({ [PAUSED_KEY]: paused });
+async function setFlag(key: string, value: boolean): Promise<void> {
+  await browser.storage.sync.set({ [key]: value });
 }
+
+export const getPaused = () => getFlag(PAUSED_KEY);
+export const setPaused = (paused: boolean) => setFlag(PAUSED_KEY, paused);
+export const getNotify = () => getFlag(NOTIFY_KEY);
+export const setNotify = (notify: boolean) => setFlag(NOTIFY_KEY, notify);
 
 export interface SettingsChange {
   rules?: Rule[];
   paused?: boolean;
+  notify?: boolean;
 }
 
 export function onSettingsChanged(listener: (change: SettingsChange) => void): () => void {
@@ -34,7 +41,8 @@ export function onSettingsChanged(listener: (change: SettingsChange) => void): (
     const change: SettingsChange = {};
     if (RULES_KEY in changes) change.rules = (changes[RULES_KEY]!.newValue as Rule[] | undefined) ?? [];
     if (PAUSED_KEY in changes) change.paused = changes[PAUSED_KEY]!.newValue === true;
-    if (change.rules || change.paused !== undefined) listener(change);
+    if (NOTIFY_KEY in changes) change.notify = changes[NOTIFY_KEY]!.newValue === true;
+    if (Object.keys(change).length) listener(change);
   };
   browser.storage.onChanged.addListener(handler);
   return () => browser.storage.onChanged.removeListener(handler);

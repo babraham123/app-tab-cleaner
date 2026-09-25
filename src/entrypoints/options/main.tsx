@@ -1,6 +1,7 @@
 import { render } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 import { useSettings } from '@/components/hooks';
+import { NotifyToggle, PinNudge } from '@/components/Notifications';
 import { PauseToggle } from '@/components/PauseToggle';
 import { t } from '@/lib/i18n';
 import { newRule, suggestRule, type Rule } from '@/lib/rules';
@@ -61,6 +62,7 @@ function Options() {
         <PauseToggle paused={paused} />
       </header>
 
+      <PinNudge />
       {paused && <p class="warning">{t('pausedBanner')}</p>}
       {saveError && <p class="error">{saveError}</p>}
 
@@ -73,6 +75,11 @@ function Options() {
         </div>
         <p class="muted">{t('rulesHelp')}</p>
         <RuleList rules={rules} onChange={(next) => void save(next)} onEdit={(rule) => setEditing({ rule })} />
+      </section>
+
+      <section>
+        <h2>{t('notifications')}</h2>
+        <NotifyToggle />
       </section>
 
       <section>

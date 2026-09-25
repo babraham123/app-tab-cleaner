@@ -4,14 +4,14 @@
 
 A Chrome and Firefox extension that closes the tabs left behind when a link hands off to a desktop app (Zoom, Slack, Teams, Notion, Discord, Linear, …). When a tab's URL matches one of your regex rules, it closes after that rule's timeout (10 seconds by default).
 
-- **Minimal permissions:** `tabs`, `storage` and `alarms`. No host permissions, no content scripts, no network requests. See [PRIVACY.md](PRIVACY.md).
+- **Minimal permissions:** `tabs`, `storage` and `alarms`, plus an optional `notifications` permission that's only requested if you turn notifications on. No host permissions, no content scripts, no network requests. See [PRIVACY.md](PRIVACY.md).
 - **Presets** for common apps, which you can edit, disable or delete.
-- **Countdown on the toolbar badge**, plus a **Keep this tab** button in the popup.
+- **Countdown on the toolbar badge**, plus a **Keep this tab** button in the popup. If the icon isn't pinned, the popup and settings suggest pinning it, or turning on **Notify before closing**. That shows a system notification you can click to keep the tab.
 - **Global pause**, JSON **import/export**, and a live **URL tester** in the rule editor.
 
 ## How it works
 
-- The countdown starts when a tab is created with, or navigates to, a URL that matches a rule.
+- The countdown starts when a tab is created with, navigates to, or reloads a URL that matches a rule.
 - Rules are checked top to bottom and the first match wins. A rule matches when any of its *include* patterns match the full URL and none of its *exclude* patterns do. Matching is case-insensitive.
 - Navigating to a URL that doesn't match cancels the countdown. That's what "continue in browser" links do.
 - These tabs are never closed:
