@@ -11,6 +11,8 @@ export default defineConfig({
     description: '__MSG_extDescription__',
     default_locale: 'en',
     permissions: ['tabs', 'storage', 'alarms'],
+    // Requested only if the user turns on "Notify before closing".
+    optional_permissions: ['notifications'],
     action: { default_title: '__MSG_extName__' },
     ...(browser === 'firefox'
       ? {

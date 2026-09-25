@@ -1,7 +1,9 @@
 import { browser, type Browser } from 'wxt/browser';
+import { t } from './i18n';
 import type { Request, TabState } from './messages';
+import { hasNotificationPermission } from './notifications';
 import { findRule, type Rule } from './rules';
-import { getPaused, getRules, initRules, onSettingsChanged } from './store';
+import { getNotify, getPaused, getRules, initRules, onSettingsChanged } from './store';
 
 interface Pending {
   ruleId: string;
@@ -19,6 +21,7 @@ interface SessionState {
 
 const SESSION_KEY = 'state';
 const ALARM_PREFIX = 'close:';
+const NOTIFICATION_PREFIX = 'closing:';
 // Chrome clamps alarms to >= 30s; setTimeout covers shorter timeouts.
 const MIN_ALARM_MS = 30_000;
 const TICK_MS = 1000;
@@ -50,19 +53,22 @@ export function startBackground(): () => void {
   let state: SessionState = { pending: {}, kept: [], baseline: {} };
   let rules: Rule[] = [];
   let paused = false;
+  let notify = false;
   const timers = new Map<number, ReturnType<typeof setTimeout>>();
   let ticker: ReturnType<typeof setInterval> | undefined;
   let queue: Promise<unknown> = Promise.resolve();
 
   const ready = (async () => {
-    const [stored, storedRules, storedPaused] = await Promise.all([
+    const [stored, storedRules, storedPaused, storedNotify] = await Promise.all([
       browser.storage.session.get(SESSION_KEY),
       getRules(),
       getPaused(),
+      getNotify(),
     ]);
     state = { ...state, ...(stored[SESSION_KEY] as SessionState | undefined) };
     rules = storedRules;
     paused = storedPaused;
+    notify = storedNotify;
     await updateIcon();
     for (const [id, p] of Object.entries(state.pending)) armTimer(Number(id), p.deadline);
     syncTicker();
@@ -121,6 +127,21 @@ export function startBackground(): () => void {
     syncTicker();
     await browser.action.setBadgeBackgroundColor({ tabId, color: BADGE_COLOR }).catch(() => {});
     await browser.action.setBadgeText({ tabId, text: formatBadge(deadline - Date.now()) }).catch(() => {});
+    if (notify && rule.timeoutSec > 0) await showNotification(tabId, rule);
+  }
+
+  // The notifications API only exists once the optional permission is granted, and the setting
+  // syncs across devices while permissions don't, so check both.
+  async function showNotification(tabId: number, rule: Rule) {
+    if (!browser.notifications || !(await hasNotificationPermission())) return;
+    await browser.notifications
+      .create(`${NOTIFICATION_PREFIX}${tabId}`, {
+        type: 'basic',
+        iconUrl: browser.runtime.getURL('/icon/128.png'),
+        title: t('notifyTitle', [rule.name, String(rule.timeoutSec)]),
+        message: t('notifyMessage'),
+      })
+      .catch(() => {});
   }
 
   async function cancel(tabId: number) {
@@ -131,6 +152,12 @@ export function startBackground(): () => void {
     await browser.alarms.clear(`${ALARM_PREFIX}${tabId}`);
     syncTicker();
     await browser.action.setBadgeText({ tabId, text: '' }).catch(() => {});
+    await browser.notifications?.clear(`${NOTIFICATION_PREFIX}${tabId}`).catch(() => {});
+  }
+
+  async function keep(tabId: number) {
+    if (!state.kept.includes(tabId)) state.kept.push(tabId);
+    await cancel(tabId);
   }
 
   async function evaluate(tabId: number, url: string | undefined, pinned: boolean | undefined) {
@@ -236,8 +263,7 @@ export function startBackground(): () => void {
     }
     if (message?.type === 'keepTab') {
       void run(async () => {
-        if (!state.kept.includes(message.tabId)) state.kept.push(message.tabId);
-        await cancel(message.tabId);
+        await keep(message.tabId);
         sendResponse(tabState(message.tabId));
       });
       return true;
@@ -245,8 +271,28 @@ export function startBackground(): () => void {
     return false;
   };
 
+  // Clicking the notification keeps the tab and brings it to the front.
+  const onNotificationClicked = (id: string) => {
+    if (!id.startsWith(NOTIFICATION_PREFIX)) return;
+    const tabId = Number(id.slice(NOTIFICATION_PREFIX.length));
+    void run(async () => {
+      await keep(tabId);
+      const tab = await getTab(tabId);
+      if (!tab) return;
+      await browser.tabs.update(tabId, { active: true });
+      await browser.windows.update(tab.windowId, { focused: true }).catch(() => {});
+    });
+  };
+
+  const bindNotifications = () => {
+    if (browser.notifications && !browser.notifications.onClicked.hasListener(onNotificationClicked)) {
+      browser.notifications.onClicked.addListener(onNotificationClicked);
+    }
+  };
+
   const stopSettings = onSettingsChanged((change) =>
     void run(async () => {
+      if (change.notify !== undefined) notify = change.notify;
       if (change.paused !== undefined && change.paused !== paused) {
         paused = change.paused;
         await updateIcon();
@@ -267,6 +313,8 @@ export function startBackground(): () => void {
   browser.runtime.onStartup.addListener(onStartup);
   browser.runtime.onInstalled.addListener(onInstalled);
   browser.runtime.onMessage.addListener(onMessage);
+  bindNotifications();
+  browser.permissions.onAdded.addListener(bindNotifications);
 
   return () => {
     stopSettings();
@@ -278,6 +326,8 @@ export function startBackground(): () => void {
     browser.runtime.onStartup.removeListener(onStartup);
     browser.runtime.onInstalled.removeListener(onInstalled);
     browser.runtime.onMessage.removeListener(onMessage);
+    browser.notifications?.onClicked.removeListener(onNotificationClicked);
+    browser.permissions.onAdded.removeListener(bindNotifications);
     for (const timer of timers.values()) clearTimeout(timer);
     clearInterval(ticker);
   };

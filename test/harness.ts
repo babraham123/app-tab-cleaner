@@ -3,18 +3,20 @@ import type { Browser } from 'wxt/browser';
 import { fakeBrowser } from 'wxt/testing/fake-browser';
 import { startBackground } from '@/lib/background';
 import { newRule, type Rule } from '@/lib/rules';
-import { setPaused, setRules } from '@/lib/store';
+import { setNotify, setPaused, setRules } from '@/lib/store';
 
 type Tab = { id: number; windowId: number; url: string; pinned: boolean; index: number };
 
 /**
- * Wraps WXT's fakeBrowser with a small tab model: its built-in tabs.remove mixes up tab and
- * window ids, and action.setIcon and tabs.onReplaced aren't mocked.
+ * Wraps WXT's fakeBrowser with a small tab model (its built-in tabs.remove mixes up tab and
+ * window ids) and stubs the APIs it doesn't mock: action.setIcon, tabs.onReplaced, i18n and
+ * permissions.
  */
 export function useHarness() {
   let tabs: Tab[] = [];
   let nextId = 1;
   let stop: (() => void) | undefined;
+  let notificationsGranted = false;
   const view = (t: Tab) => ({ ...t, active: false, highlighted: false, incognito: false }) as unknown as Browser.tabs.Tab;
 
   beforeEach(() => {
@@ -50,6 +52,14 @@ export function useHarness() {
     });
     fakeBrowser.action.setIcon = vi.fn(async () => {});
     Object.assign(fakeBrowser.tabs, { onReplaced: { addListener: vi.fn(), removeListener: vi.fn() } });
+    // Messages render as `key(sub1,sub2)` so assertions stay readable without loading _locales.
+    fakeBrowser.i18n.getMessage = ((key: string, subs?: string | string[]) =>
+      subs === undefined ? key : `${key}(${[subs].flat().join(',')})`) as typeof fakeBrowser.i18n.getMessage;
+    notificationsGranted = false;
+    Object.assign(fakeBrowser.permissions, {
+      contains: async () => notificationsGranted,
+      onAdded: { addListener: vi.fn(), removeListener: vi.fn() },
+    });
   });
 
   afterEach(() => {
@@ -82,6 +92,16 @@ export function useHarness() {
     },
     async setRules(rules: Partial<Rule>[]) {
       await setRules(rules.map((r) => newRule({ name: 'rule', ...r })));
+      await settle();
+    },
+    async enableNotifications({ granted = true } = {}) {
+      notificationsGranted = granted;
+      await setNotify(true);
+      await settle();
+    },
+    notifications: () => fakeBrowser.notifications.getAllCreateOptions(),
+    async clickNotification(id: string) {
+      await fakeBrowser.notifications.onClicked.trigger(id);
       await settle();
     },
     async setPaused(paused: boolean) {

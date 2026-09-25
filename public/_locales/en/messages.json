@@ -272,5 +272,40 @@
         "content": "$1"
       }
     }
+  },
+  "notifyTitle": {
+    "message": "Closing $P1$ tab in $P2$s",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      },
+      "p2": {
+        "content": "$2"
+      }
+    }
+  },
+  "notifyMessage": {
+    "message": "Click to keep it open."
+  },
+  "notifySetting": {
+    "message": "Notify before closing a tab"
+  },
+  "notifySettingHelp": {
+    "message": "Shows a system notification when a countdown starts; click it to keep the tab. Asks for the notifications permission on this device."
+  },
+  "notifyDenied": {
+    "message": "Notifications weren't allowed, so this stays off."
+  },
+  "notifications": {
+    "message": "Notifications"
+  },
+  "pinNudge": {
+    "message": "Pin App Tab Cleaner to your toolbar to see countdowns: open the extensions menu (the puzzle icon) and click the pin next to App Tab Cleaner."
+  },
+  "pinNudgeNotify": {
+    "message": "Or get a notification instead:"
+  },
+  "enableNotifications": {
+    "message": "Turn on notifications"
   }
 }
