@@ -200,6 +200,9 @@ export function startBackground(): () => void {
 
   const onUpdated = (tabId: number, change: Browser.tabs.OnUpdatedInfo, tab: Browser.tabs.Tab) => {
     if (change.url) void run(() => evaluate(tabId, change.url, tab.pinned));
+    // A reload doesn't change the URL, but should still start a countdown (e.g. a tab that was
+    // already open when its rule was added).
+    else if (change.status === 'loading') void run(() => evaluate(tabId, tab.url, tab.pinned));
     else if (change.pinned) void run(() => cancel(tabId));
   };
 

@@ -37,6 +37,17 @@ describe('closing matching tabs', () => {
     expect(h.isOpen(id)).toBe(false);
   });
 
+  it('starts the countdown when a matching tab opened before the rule existed is reloaded', async () => {
+    await h.start();
+    const id = await h.openTab('https://example.com/launch');
+    await h.setRules([{ include: ['^https://example\\.com/launch'] }]);
+    await h.advance(20_000);
+    expect(h.isOpen(id)).toBe(true);
+    await h.reload(id);
+    await h.advance(10_000);
+    expect(h.isOpen(id)).toBe(false);
+  });
+
   it('matches case-insensitively', async () => {
     await withRule();
     const id = await h.openTab('HTTPS://EXAMPLE.COM/LAUNCH');
@@ -210,6 +221,7 @@ describe('tabs that existed before the extension started', () => {
     await h.browserStartup();
     // Session restore reloading the same URL is not a new match.
     await h.navigate(restored, 'https://example.com/launch/1');
+    await h.reload(restored);
     await h.advance(20_000);
     expect(h.isOpen(restored)).toBe(true);
 

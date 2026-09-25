@@ -103,6 +103,11 @@ export function useHarness() {
       await fakeBrowser.tabs.update(id, { url });
       await settle();
     },
+    async reload(id: number) {
+      const tab = tabs.find((t) => t.id === id)!;
+      await fakeBrowser.tabs.onUpdated.trigger(id, { status: 'loading' }, view(tab));
+      await settle();
+    },
     async pin(id: number) {
       await fakeBrowser.tabs.update(id, { pinned: true });
       await settle();
