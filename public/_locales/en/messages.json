@@ -291,7 +291,7 @@
     "message": "Notify before closing a tab"
   },
   "notifySettingHelp": {
-    "message": "Shows a system notification when a countdown starts; click it to keep the tab. Asks for the notifications permission on this device."
+    "message": "Shows a system notification when a countdown starts; click it to keep the tab. Turning this on asks for the notifications permission on this device."
   },
   "notifyDenied": {
     "message": "Notifications weren't allowed, so this stays off."

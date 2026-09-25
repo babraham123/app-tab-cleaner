@@ -2,23 +2,20 @@ import { useEffect, useState } from 'preact/hooks';
 import { browser } from 'wxt/browser';
 import { hasNotificationPermission, isPinned } from '@/lib/notifications';
 import type { Rule } from '@/lib/rules';
-import { getNotify, getPaused, getRules, onSettingsChanged } from '@/lib/store';
+import { getPaused, getRules, onSettingsChanged } from '@/lib/store';
 
 export function useSettings() {
   const [rules, setRules] = useState<Rule[]>();
   const [paused, setPaused] = useState(false);
-  const [notify, setNotify] = useState(false);
   useEffect(() => {
     void getRules().then(setRules);
     void getPaused().then(setPaused);
-    void getNotify().then(setNotify);
     return onSettingsChanged((change) => {
       if (change.rules) setRules(change.rules);
       if (change.paused !== undefined) setPaused(change.paused);
-      if (change.notify !== undefined) setNotify(change.notify);
     });
   }, []);
-  return { rules, paused, notify };
+  return { rules, paused };
 }
 
 export function useNow(intervalMs = 1000): number {

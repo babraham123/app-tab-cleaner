@@ -4,7 +4,6 @@ import type { Rule } from './rules';
 
 const RULES_KEY = 'rules';
 const PAUSED_KEY = 'paused';
-const NOTIFY_KEY = 'notify';
 
 export async function getRules(): Promise<Rule[]> {
   const stored = await browser.storage.sync.get(RULES_KEY);
@@ -26,13 +25,10 @@ async function setFlag(key: string, value: boolean): Promise<void> {
 
 export const getPaused = () => getFlag(PAUSED_KEY);
 export const setPaused = (paused: boolean) => setFlag(PAUSED_KEY, paused);
-export const getNotify = () => getFlag(NOTIFY_KEY);
-export const setNotify = (notify: boolean) => setFlag(NOTIFY_KEY, notify);
 
 export interface SettingsChange {
   rules?: Rule[];
   paused?: boolean;
-  notify?: boolean;
 }
 
 export function onSettingsChanged(listener: (change: SettingsChange) => void): () => void {
@@ -41,7 +37,6 @@ export function onSettingsChanged(listener: (change: SettingsChange) => void): (
     const change: SettingsChange = {};
     if (RULES_KEY in changes) change.rules = (changes[RULES_KEY]!.newValue as Rule[] | undefined) ?? [];
     if (PAUSED_KEY in changes) change.paused = changes[PAUSED_KEY]!.newValue === true;
-    if (NOTIFY_KEY in changes) change.notify = changes[NOTIFY_KEY]!.newValue === true;
     if (Object.keys(change).length) listener(change);
   };
   browser.storage.onChanged.addListener(handler);

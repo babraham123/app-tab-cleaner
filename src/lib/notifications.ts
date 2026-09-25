@@ -1,6 +1,10 @@
 import { browser, type Browser } from 'wxt/browser';
 
-/** Optional so the install prompt stays at tabs/storage/alarms; requested when the user opts in. */
+/**
+ * Optional so the install prompt stays at tabs/storage/alarms. Holding the permission *is* the
+ * "notify before closing" setting: a popup that requests it can close before the request resolves
+ * (the prompt steals focus), so nothing may depend on the caller surviving.
+ */
 const PERMISSION: Browser.permissions.Permissions = { permissions: ['notifications'] };
 
 export const hasNotificationPermission = () => browser.permissions.contains(PERMISSION);

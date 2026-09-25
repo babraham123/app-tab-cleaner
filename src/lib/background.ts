@@ -3,7 +3,7 @@ import { t } from './i18n';
 import type { Request, TabState } from './messages';
 import { hasNotificationPermission } from './notifications';
 import { findRule, type Rule } from './rules';
-import { getNotify, getPaused, getRules, initRules, onSettingsChanged } from './store';
+import { getPaused, getRules, initRules, onSettingsChanged } from './store';
 
 interface Pending {
   ruleId: string;
@@ -59,16 +59,16 @@ export function startBackground(): () => void {
   let queue: Promise<unknown> = Promise.resolve();
 
   const ready = (async () => {
-    const [stored, storedRules, storedPaused, storedNotify] = await Promise.all([
+    const [stored, storedRules, storedPaused, granted] = await Promise.all([
       browser.storage.session.get(SESSION_KEY),
       getRules(),
       getPaused(),
-      getNotify(),
+      hasNotificationPermission(),
     ]);
     state = { ...state, ...(stored[SESSION_KEY] as SessionState | undefined) };
     rules = storedRules;
     paused = storedPaused;
-    notify = storedNotify;
+    notify = granted;
     await updateIcon();
     for (const [id, p] of Object.entries(state.pending)) armTimer(Number(id), p.deadline);
     syncTicker();
@@ -130,10 +130,8 @@ export function startBackground(): () => void {
     if (notify && rule.timeoutSec > 0) await showNotification(tabId, rule);
   }
 
-  // The notifications API only exists once the optional permission is granted, and the setting
-  // syncs across devices while permissions don't, so check both.
   async function showNotification(tabId: number, rule: Rule) {
-    if (!browser.notifications || !(await hasNotificationPermission())) return;
+    if (!browser.notifications) return;
     await browser.notifications
       .create(`${NOTIFICATION_PREFIX}${tabId}`, {
         type: 'basic',
@@ -284,15 +282,17 @@ export function startBackground(): () => void {
     });
   };
 
-  const bindNotifications = () => {
-    if (browser.notifications && !browser.notifications.onClicked.hasListener(onNotificationClicked)) {
-      browser.notifications.onClicked.addListener(onNotificationClicked);
-    }
-  };
+  // The notifications API only appears once the optional permission is granted.
+  const onPermissionsChanged = () =>
+    void run(async () => {
+      notify = await hasNotificationPermission();
+      if (browser.notifications && !browser.notifications.onClicked.hasListener(onNotificationClicked)) {
+        browser.notifications.onClicked.addListener(onNotificationClicked);
+      }
+    });
 
   const stopSettings = onSettingsChanged((change) =>
     void run(async () => {
-      if (change.notify !== undefined) notify = change.notify;
       if (change.paused !== undefined && change.paused !== paused) {
         paused = change.paused;
         await updateIcon();
@@ -313,8 +313,9 @@ export function startBackground(): () => void {
   browser.runtime.onStartup.addListener(onStartup);
   browser.runtime.onInstalled.addListener(onInstalled);
   browser.runtime.onMessage.addListener(onMessage);
-  bindNotifications();
-  browser.permissions.onAdded.addListener(bindNotifications);
+  onPermissionsChanged();
+  browser.permissions.onAdded.addListener(onPermissionsChanged);
+  browser.permissions.onRemoved.addListener(onPermissionsChanged);
 
   return () => {
     stopSettings();
@@ -327,7 +328,8 @@ export function startBackground(): () => void {
     browser.runtime.onInstalled.removeListener(onInstalled);
     browser.runtime.onMessage.removeListener(onMessage);
     browser.notifications?.onClicked.removeListener(onNotificationClicked);
-    browser.permissions.onAdded.removeListener(bindNotifications);
+    browser.permissions.onAdded.removeListener(onPermissionsChanged);
+    browser.permissions.onRemoved.removeListener(onPermissionsChanged);
     for (const timer of timers.values()) clearTimeout(timer);
     clearInterval(ticker);
   };
