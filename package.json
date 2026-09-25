@@ -2,7 +2,7 @@
   "name": "app-tab-cleaner",
   "description": "Auto-close the browser tabs left behind after links hand off to desktop apps.",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "license": "MIT",
   "packageManager": "pnpm@12.6.0",
