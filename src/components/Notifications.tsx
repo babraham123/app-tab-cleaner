@@ -20,7 +20,13 @@ export function NotifyToggle() {
           type="checkbox"
           role="switch"
           checked={enabled}
-          onChange={(e) => (e.currentTarget.checked ? enable() : void removeNotificationPermission())}
+          onChange={(e) => {
+            const wantOn = e.currentTarget.checked;
+            // Only the permission itself decides the state; undo the click until it changes.
+            e.currentTarget.checked = enabled;
+            if (wantOn) enable();
+            else void removeNotificationPermission();
+          }}
         />
         <span class="switch-track" aria-hidden="true" />
         <span>{t('notifySetting')}</span>
