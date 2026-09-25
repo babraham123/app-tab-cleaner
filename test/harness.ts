@@ -3,7 +3,7 @@ import type { Browser } from 'wxt/browser';
 import { fakeBrowser } from 'wxt/testing/fake-browser';
 import { startBackground } from '@/lib/background';
 import { newRule, type Rule } from '@/lib/rules';
-import { setNotify, setPaused, setRules } from '@/lib/store';
+import { setPaused, setRules } from '@/lib/store';
 
 type Tab = { id: number; windowId: number; url: string; pinned: boolean; index: number };
 
@@ -56,9 +56,18 @@ export function useHarness() {
     fakeBrowser.i18n.getMessage = ((key: string, subs?: string | string[]) =>
       subs === undefined ? key : `${key}(${[subs].flat().join(',')})`) as typeof fakeBrowser.i18n.getMessage;
     notificationsGranted = false;
+    const permissionEvent = () => {
+      const listeners = new Set<() => void>();
+      return {
+        addListener: (l: () => void) => listeners.add(l),
+        removeListener: (l: () => void) => listeners.delete(l),
+        trigger: () => listeners.forEach((l) => l()),
+      };
+    };
     Object.assign(fakeBrowser.permissions, {
       contains: async () => notificationsGranted,
-      onAdded: { addListener: vi.fn(), removeListener: vi.fn() },
+      onAdded: permissionEvent(),
+      onRemoved: permissionEvent(),
     });
   });
 
@@ -94,9 +103,13 @@ export function useHarness() {
       await setRules(rules.map((r) => newRule({ name: 'rule', ...r })));
       await settle();
     },
-    async enableNotifications({ granted = true } = {}) {
+    /** Grants or revokes the optional notifications permission, as the browser prompt would. */
+    async setNotificationPermission(granted: boolean) {
       notificationsGranted = granted;
-      await setNotify(true);
+      const event = (granted ? fakeBrowser.permissions.onAdded : fakeBrowser.permissions.onRemoved) as unknown as {
+        trigger(): void;
+      };
+      event.trigger();
       await settle();
     },
     notifications: () => fakeBrowser.notifications.getAllCreateOptions(),

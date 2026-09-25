@@ -161,7 +161,7 @@ describe('notifications', () => {
 
   it('notifies when a countdown starts and clears it when the tab closes', async () => {
     await withRule({ name: 'Zoom' });
-    await h.enableNotifications();
+    await h.setNotificationPermission(true);
     const id = await h.openTab('https://example.com/launch');
     expect(h.notifications()).toEqual({
       [`closing:${id}`]: expect.objectContaining({ title: 'notifyTitle(Zoom,10)', message: 'notifyMessage' }),
@@ -173,7 +173,7 @@ describe('notifications', () => {
 
   it('clears the notification when the countdown is cancelled', async () => {
     await withRule();
-    await h.enableNotifications();
+    await h.setNotificationPermission(true);
     const id = await h.openTab('https://example.com/launch');
     await h.navigate(id, 'https://example.com/other');
     expect(h.notifications()).toEqual({});
@@ -181,7 +181,7 @@ describe('notifications', () => {
 
   it('keeps the tab when the notification is clicked', async () => {
     await withRule();
-    await h.enableNotifications();
+    await h.setNotificationPermission(true);
     const id = await h.openTab('https://example.com/launch');
     await h.clickNotification(`closing:${id}`);
     await h.advance(60_000);
@@ -189,16 +189,25 @@ describe('notifications', () => {
     expect(await h.send({ type: 'getTabState', tabId: id })).toEqual({ kept: true });
   });
 
-  it('skips notifying when this device has not granted the permission', async () => {
+  it('stops notifying once the permission is removed', async () => {
     await withRule();
-    await h.enableNotifications({ granted: false });
+    await h.setNotificationPermission(true);
+    await h.setNotificationPermission(false);
     await h.openTab('https://example.com/launch');
     expect(h.notifications()).toEqual({});
   });
 
+  it('picks up a permission granted before the worker started', async () => {
+    await h.setRules([{ include: ['^https://example\\.com/launch'] }]);
+    await h.setNotificationPermission(true);
+    await h.start();
+    const id = await h.openTab('https://example.com/launch');
+    expect(Object.keys(h.notifications())).toEqual([`closing:${id}`]);
+  });
+
   it('does not notify for 0s timeouts', async () => {
     await withRule({ timeoutSec: 0 });
-    await h.enableNotifications();
+    await h.setNotificationPermission(true);
     await h.openTab('https://example.com/launch');
     expect(h.notifications()).toEqual({});
   });
