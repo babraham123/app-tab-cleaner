@@ -60,7 +60,51 @@ Built with [WXT](https://wxt.dev), TypeScript and Preact.
 | `src/entrypoints/popup`, `src/entrypoints/options` | UI |
 | `public/_locales/en/messages.json` | All UI strings. Translations are welcome |
 
-Pushing a `v*` tag runs CI, which builds both zips and attaches them to a GitHub release. Submitting to the stores is a manual step.
+## Releasing
+
+```sh
+npm version patch     # bumps package.json, commits, and tags vX.Y.Z
+git push --follow-tags
+```
+
+The tag triggers CI in this order:
+
+1. Lint, test and build.
+2. Check that the tag matches `package.json`.
+3. Attach the zips to a GitHub release.
+4. Submit the same zips to the Chrome Web Store and Firefox Add-ons.
+
+Store submission runs in the `web-stores` GitHub environment. Each store is skipped, with a warning, until its secrets are set.
+
+### One-time store setup
+
+Both stores need the **first** version uploaded by hand. After that, CI handles updates.
+
+**Chrome Web Store** (uses API v2 with a service account)
+
+1. Upload `app-tab-cleaner-X.Y.Z-chrome.zip` in the [developer dashboard](https://chrome.google.com/webstore/devconsole) and fill in the listing:
+   - Link [PRIVACY.md](PRIVACY.md) as the privacy policy.
+   - Justify each permission: `tabs`, `storage`, `alarms`, and the optional `notifications`.
+2. Create a service account, following [Google's guide](https://developer.chrome.com/docs/webstore/service-accounts):
+   - In a Google Cloud project, enable the Chrome Web Store API.
+   - Create the service account, download a JSON key, and add the account's email in the dashboard's account settings.
+3. Add these secrets to the `web-stores` environment:
+   - `CHROME_EXTENSION_ID`: from the item's dashboard URL.
+   - `CHROME_PUBLISHER_ID`: from `https://chrome.google.com/webstore/devconsole/<publisher-id>`.
+   - `CHROME_SERVICE_ACCOUNT_CLIENT_EMAIL`: `client_email` from the JSON key.
+   - `CHROME_SERVICE_ACCOUNT_PRIVATE_KEY`: `private_key` from the JSON key, with real newlines rather than `\n`.
+
+**Firefox Add-ons**
+
+1. [Submit a new add-on](https://addons.mozilla.org/developers/addon/submit/) as a listed add-on, using `app-tab-cleaner-X.Y.Z-firefox.zip`. When asked for source code, upload `…-sources.zip`.
+2. Create API credentials at [addons.mozilla.org/developers/addon/api/key](https://addons.mozilla.org/developers/addon/api/key/).
+3. Add these secrets to the `web-stores` environment:
+   - `FIREFOX_JWT_ISSUER`
+   - `FIREFOX_JWT_SECRET`
+
+The add-on ID is fixed in `wxt.config.ts`.
+
+**Checking credentials:** under Actions → CI → **Run workflow**, keep "dry run" ticked. The job authenticates with each configured store without uploading anything.
 
 ## License
 
