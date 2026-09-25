@@ -1,4 +1,5 @@
-import { useState } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
+import { browser } from 'wxt/browser';
 import { t } from '@/lib/i18n';
 import { removeNotificationPermission, requestNotificationPermission } from '@/lib/notifications';
 import { useNotificationPermission, usePinned } from './hooks';
@@ -35,6 +36,24 @@ export function NotifyToggle() {
         {t('notifySettingHelp')}
       </p>
       {denied && <p class="error">{t('notifyDenied')}</p>}
+      {enabled && <OsNotificationTip />}
+    </div>
+  );
+}
+
+const OS_TIP_KEYS: Partial<Record<string, string>> = { mac: 'notifyOsTipMac', win: 'notifyOsTipWin' };
+
+/** The browser happily "creates" notifications the OS then drops, so point at the OS setting. */
+function OsNotificationTip() {
+  const [os, setOs] = useState<string>();
+  useEffect(() => {
+    void browser.runtime.getPlatformInfo().then((info) => setOs(info.os));
+  }, []);
+  const osKey = os && OS_TIP_KEYS[os];
+  return (
+    <div class="tip">
+      <p>{t('notifyOsTip')}</p>
+      {osKey && <p>{t(osKey)}</p>}
     </div>
   );
 }

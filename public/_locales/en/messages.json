@@ -307,5 +307,14 @@
   },
   "enableNotifications": {
     "message": "Turn on notifications"
+  },
+  "notifyOsTip": {
+    "message": "Not seeing notifications? Your operating system must also allow notifications from your browser, and Focus / Do Not Disturb must be off."
+  },
+  "notifyOsTipMac": {
+    "message": "On macOS: System Settings → Notifications → your browser → turn on Allow notifications, with the alert style set to Banners or Alerts."
+  },
+  "notifyOsTipWin": {
+    "message": "On Windows: Settings → System → Notifications → turn notifications on for your browser."
   }
 }
